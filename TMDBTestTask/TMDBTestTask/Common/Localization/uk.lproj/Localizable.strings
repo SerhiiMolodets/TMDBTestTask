@@ -1,0 +1,19 @@
+/* 
+  Localizable.strings
+  TMDBTestTask
+
+  Created by Serhii Molodets on 31.10.2024.
+  
+*/
+
+"common_cancel" = "Скасувати";
+"common_search" = "Пошук";
+
+"main_navbar_title" = "Популярні фільми";
+"main_alphabetical_sort_option" = "За алфавітом";
+"main_date_sort_option" = "За датою";
+"main_rating_sort_option" = "За рейтингом";
+"main_sort_option_title" = "Параметри сортування";
+"main_sort_option_message" = "Оберіть метод сортування";
+
+"data_placeholder" = "Фільми відсутні";

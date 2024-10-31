@@ -19,7 +19,7 @@ class EmptyDataPlaceholderView: UIView {
     
     private let messageLabel: UILabel = {
         let label = UILabel()
-        label.text = "No movies"
+        label.text = "data_placeholder".localized()
         label.textColor = .gray
         label.font = UIFont.systemFont(ofSize: 18, weight: .medium)
         label.textAlignment = .center

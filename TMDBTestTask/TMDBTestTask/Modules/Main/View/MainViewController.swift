@@ -68,7 +68,7 @@ private extension MainViewController {
     }
     
     func setupNavigationBar() {
-        navigationItem.title = "Popular Movies" // localize
+        navigationItem.title = "main_navbar_title".localized()
         let button = UIButton(type: .custom)
         button.setImage(UIImage(systemName: "arrow.up.and.down.text.horizontal")?.withTintColor(.gray), for: .normal)
         button.frame = CGRectMake(0, 0, 44, 44)
@@ -81,17 +81,18 @@ private extension MainViewController {
         let search = UISearchController(searchResultsController: nil)
         search.delegate = self
         search.searchBar.delegate = self
+        search.searchBar.placeholder = "common_search".localized()
         search.searchResultsUpdater = self
         navigationItem.searchController = search
         navigationItem.hidesSearchBarWhenScrolling = false
     }
     
     @objc private func sortedAction() {
-        let actionSheet = UIAlertController(title: "Sort Options", message: "Choose sorting method", preferredStyle: .actionSheet)
+        let actionSheet = UIAlertController(title: "main_sort_option_title".localized(), message: "main_sort_option_message".localized(), preferredStyle: .actionSheet)
         
         let options: [SortOption] = [.alphabetical, .date, .rating]
         for option in options {
-            let action = UIAlertAction(title: option.rawValue, style: .default) { [weak self] _ in
+            let action = UIAlertAction(title: option.rawValue.localized(), style: .default) { [weak self] _ in
                 self?.viewModel.selectedSortOption = option
             }
             
@@ -101,7 +102,7 @@ private extension MainViewController {
             actionSheet.addAction(action)
         }
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: "common_cancel".localized(), style: .cancel, handler: nil)
         actionSheet.addAction(cancelAction)
         
         present(actionSheet, animated: true, completion: nil)
