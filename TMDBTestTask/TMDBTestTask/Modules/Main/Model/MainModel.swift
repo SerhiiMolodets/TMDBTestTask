@@ -14,7 +14,7 @@ struct MainModel {
     }
     
     enum ViewAction {
-        case showNotImplementedAlert
+        case showError(Error)
 //        case showError(StatusMessage)
 //        case showAddButton(isHidden: Bool)
     }

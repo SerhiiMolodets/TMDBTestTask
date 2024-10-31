@@ -50,15 +50,6 @@ private extension MainViewController {
         refreshControl.tintColor = .black
         refreshControl.addTarget(viewModel, action: #selector(MainViewModel.refresh), for: .valueChanged)
         tableView.refreshControl = refreshControl
-        
-//        tableView.addInfiniteScroll { [weak self] _ in
-//            self?.viewModel.fetch(reload: false, nextPage: true)
-//        }
-//        
-//        tableView.setShouldShowInfiniteScrollHandler { [weak self] _ in
-//            return self?.viewModel.canPaginate() == true
-//        }
-        
     }
     
     func setupNavigationBar() {
@@ -70,7 +61,7 @@ private extension MainViewController {
         button.addTarget(self, action: #selector(sortedAction), for: .touchUpInside)
         let barButtonItem = UIBarButtonItem(customView: button)
         navigationItem.rightBarButtonItem = barButtonItem
-        navigationItem.rightBarButtonItem?.tintColor = .gray
+        self.navigationController?.navigationBar.tintColor = .black
         
         let search = UISearchController(searchResultsController: nil)
         search.delegate = self
@@ -81,7 +72,24 @@ private extension MainViewController {
     }
     
     @objc private func sortedAction() {
+        let actionSheet = UIAlertController(title: "Sort Options", message: "Choose sorting method", preferredStyle: .actionSheet)
         
+        let options: [SortOption] = [.alphabetical, .date, .rating]
+        for option in options {
+            let action = UIAlertAction(title: option.rawValue, style: .default) { [weak self] _ in
+                self?.viewModel.selectedSortOption = option
+            }
+            
+            if option == viewModel.selectedSortOption {
+                action.setValue(true, forKey: "checked")
+            }
+            actionSheet.addAction(action)
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        actionSheet.addAction(cancelAction)
+        
+        present(actionSheet, animated: true, completion: nil)
     }
 }
 
@@ -110,24 +118,19 @@ private extension MainViewController {
         case .loaded:
             tableView.reloadData()
             refreshControl.endRefreshing()
-            // reload
         case .empty:
             break // show empty state
         case .loading:
-            break // show loading state
+            break
         }
         
     }
     
     func handleAction(_ action: MainModel.ViewAction) {
-        //        switch action {
-        //        case .showNotImplementedAlert:
-        //            showToast(message: "Not Implemented", .error)
-        //        case let .showError(error):
-        //            handleStatusMessage(error)
-        //        case .showAddButton(let isHidden):
-        //            addButton.isHidden = isHidden
-        //        }
+                switch action {
+                case let .showError(error):
+                    showAlert(error.localizedDescription)
+                }
     }
 }
 

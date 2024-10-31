@@ -19,6 +19,10 @@ final class MainViewModel {
     private var totalPages = 0
     var items: [MovieResult] = []
     var genres: [Genre] = []
+    var selectedSortOption: SortOption = .rating {
+        didSet {
+            sortItems()  }
+    }
     
     private var netwrok = TMDBNetworkClient()
     
@@ -62,7 +66,7 @@ extension MainViewModel {
                 
                 proceed(movies: moviesResponse.results ?? [], nextPage: nextPage)
             } catch {
-                debugPrint(error)
+                viewActionSubj.send(.showError(error))
             }
             isLoading = false
         }
@@ -75,7 +79,7 @@ extension MainViewModel {
             do {
                 genres = try await netwrok.getGenres().genres
             } catch {
-                debugPrint(error)
+                viewActionSubj.send(.showError(error))
             }
         }
     }
@@ -109,5 +113,24 @@ extension MainViewModel {
             }
         }
         return titles
+    }
+}
+
+
+private extension MainViewModel {
+    func sortItems() {
+        switch selectedSortOption {
+        case .alphabetical:
+            items.sort { ($0.title ?? "") < ($1.title ?? "") }
+        case .date:
+            items.sort {
+                let date1 = $0.releaseDate ?? ""
+                let date2 = $1.releaseDate ?? ""
+                return date1 < date2
+            }
+        case .rating:
+            items.sort { ($0.popularity ?? 0) > ($1.popularity ?? 0) }
+        }
+        viewStateSubj.send(.loaded)
     }
 }
