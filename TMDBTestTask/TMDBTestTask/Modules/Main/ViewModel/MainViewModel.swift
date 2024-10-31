@@ -7,22 +7,42 @@
 
 import Foundation
 import Combine
+import Dependencies
 
-final class MainViewModel {
-    private let viewStateSubj = CurrentValueSubject<MainModel.ViewState, Never>(.loading)
+protocol MainViewModelProtocol {
+    var selectedSortOption: SortOption { get set }
+    var viewState: AnyPublisher<MainModel.ViewState, Never> { get }
+    var viewAction: AnyPublisher<MainModel.ViewAction, Never> { get }
+    var searchQuery: String { get set }
+    var items: [MovieResult] { get set }
+    
+    func onViewDidLoad()
+    func getGenresTitles(by ids: [Int]) -> String
+    func fetch(reload: Bool, nextPage: Bool)
+}
+
+final class MainViewModel: MainViewModelProtocol {
+    
+    // MARK: - Dependencies -
+    @Dependency(\.apiClient) var apiClient
+    
+    // MARK: - Properties -
+    private let viewStateSubj = CurrentValueSubject<MainModel.ViewState, Never>(.empty)
     private let viewActionSubj = PassthroughSubject<MainModel.ViewAction, Never>()
-    
-    
     private var isLoading = false
     private var isPaginated = false
     private var currentPage = 0
     private var totalPages = 0
-    
-    
-    private var netwrok = TMDBNetworkClient()
-    
+    var items: [MovieResult] = []
+    var genres: [Genre] = []
+    var selectedSortOption: SortOption = .rating {
+        didSet {
+            sortItems()  }
+    }
+    @Published var searchQuery: String = ""
+    private var cancellables = Set<AnyCancellable>()
+    weak var coordinator: MainCoordinator?
 }
-
 
 extension MainViewModel {
     var viewState: AnyPublisher<MainModel.ViewState, Never> { viewStateSubj.eraseToAnyPublisher() }
@@ -30,71 +50,137 @@ extension MainViewModel {
     
     @MainActor
     func onViewDidLoad() {
-                fetch(reload: false, nextPage: false)
-    }
-    
-    func items() -> [MovieResult] {
-        switch viewStateSubj.value {
-        case let .loaded(items, _): return items
-        default: return []
-        }
+        LoaderView.sharedInstance.start()
+        fetch(reload: false, nextPage: false)
+        getGenres()
+        setupSearchBinding() 
     }
     
     @MainActor
     func fetch(reload: Bool, nextPage: Bool) {
-        
+        guard !isLoading else { return }
         if canPaginate()  {
             currentPage += 1
         }
-        
         if currentPage <= 1 || reload {
-            self.currentPage = 0
+            self.currentPage = 1
             self.totalPages = 0
         }
-        
-        guard !isLoading else { return }
         if reload { isPaginated = false }
         else if currentPage > 1 { isPaginated = true }
-        isLoading = true
-        
         Task {
             do {
-                let moviesResponse = try await netwrok.getMoviews(page: 0)
+                isLoading = true
+                let moviesResponse = try await apiClient.getMovies(page: currentPage)
                 currentPage = moviesResponse.page ?? 0
                 totalPages = moviesResponse.totalPages ?? 0
                 
                 proceed(movies: moviesResponse.results ?? [], nextPage: nextPage)
             } catch {
-                debugPrint(error)
+                viewActionSubj.send(.showError(error))
             }
+            isLoading = false
         }
-
-//        dependencies.notificationManager.getNotifications(page: currentPage) { [weak self] result in
-//            switch result {
-//            case .success(let response):
-//                self?.currentPage = response.current_page ?? 0
-//                self?.totalPages = response.total_pages ?? 0
-//                self?.proceed(notifications: response.items, nextPage: nextPage)
-//            case .failure(let message):
-//                self?.viewActionSubj.send(.showError(message))
-//            }
-//            self?.isLoading = false
-//        }
-        
-    }
-    
-    func proceed(movies: [MovieResult], nextPage: Bool) {
-        var items: [MovieResult] = []
-        
-        if nextPage { items += self.items() }
-        
-        items.append(contentsOf: movies)
-        
-        if items.isEmpty { viewStateSubj.send(.empty) }
-        else { viewStateSubj.send(.loaded(items, true)) }
     }
     
     func canPaginate() -> Bool {
         return self.currentPage < self.totalPages
+    }
+    
+    @MainActor
+    @objc func refresh() {
+        fetch(reload: true, nextPage: false)
+        searchQuery = ""
+    }
+    
+    func getGenresTitles(by ids: [Int]) -> String {
+        var titles = ""
+        ids.forEach { id in
+            if let genre = genres.first(where: { genre in
+                return id == genre.id
+            }) {
+                titles.append("\(genre.name) ")
+            }
+        }
+        return titles
+    }
+}
+
+
+private extension MainViewModel {
+    func sortItems() {
+        switch selectedSortOption {
+        case .alphabetical:
+            items.sort { ($0.title ?? "") < ($1.title ?? "") }
+        case .date:
+            items.sort {
+                let date1 = $0.releaseDate ?? ""
+                let date2 = $1.releaseDate ?? ""
+                return date1 < date2
+            }
+        case .rating:
+            items.sort { ($0.popularity ?? 0) > ($1.popularity ?? 0) }
+        }
+        viewStateSubj.send(.loaded)
+    }
+
+    @MainActor
+    private func setupSearchBinding() {
+        $searchQuery
+            .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
+            .removeDuplicates()
+            .sink { [weak self] query in
+                guard !query.isEmpty else { return }
+                self?.search(query: query, reload: true, nextPage: false)
+            }
+            .store(in: &cancellables)
+    }
+    
+    @MainActor
+    private func getGenres() {
+        Task {
+            do {
+                genres = try await apiClient.getGenres().genres
+            } catch {
+                viewActionSubj.send(.showError(error))
+            }
+        }
+    }
+    
+    func proceed(movies: [MovieResult], nextPage: Bool) {
+        var items: [MovieResult] = []
+        if nextPage { items += self.items }
+        items.append(contentsOf: movies)
+        if items.isEmpty { viewStateSubj.send(.empty) }
+        else { viewStateSubj.send(.loaded) }
+        self.items = items
+        LoaderView.sharedInstance.stop()
+    }
+    
+    @MainActor
+    func search(query: String, reload: Bool, nextPage: Bool) {
+        guard !isLoading else { return }
+        if canPaginate()  {
+            currentPage += 1
+        }
+        if currentPage <= 1 || reload {
+            self.currentPage = 1
+            self.totalPages = 0
+        }
+        if reload { isPaginated = false }
+        else if currentPage > 1 { isPaginated = true }
+        Task {
+            do {
+                isLoading = true
+                let moviesResponse = try await apiClient.searchMovies(query: query)
+                currentPage = moviesResponse.page ?? 0
+                totalPages = moviesResponse.totalPages ?? 0
+                
+                proceed(movies: moviesResponse.results ?? [], nextPage: nextPage)
+            } catch {
+                viewActionSubj.send(.showError(error))
+            }
+            isLoading = false
+        }
     }
 }

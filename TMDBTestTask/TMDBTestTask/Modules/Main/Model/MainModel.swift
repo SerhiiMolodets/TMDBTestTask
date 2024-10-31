@@ -9,13 +9,10 @@ struct MainModel {
     // MARK: Output
     enum ViewState: Equatable {
         case empty
-        case loading
-        case loaded([MovieResult], Bool)
+        case loaded
     }
     
     enum ViewAction {
-        case showNotImplementedAlert
-//        case showError(StatusMessage)
-//        case showAddButton(isHidden: Bool)
+        case showError(Error)
     }
 }

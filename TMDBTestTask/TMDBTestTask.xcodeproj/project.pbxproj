@@ -6,12 +6,20 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		082F519C2CD2C84600CE76BF /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 082F519B2CD2C84600CE76BF /* SDWebImage */; };
+		082F519E2CD2C84600CE76BF /* SDWebImageMapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 082F519D2CD2C84600CE76BF /* SDWebImageMapKit */; };
+		082F51A12CD2CCCC00CE76BF /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 082F51A02CD2CCCC00CE76BF /* SnapKit */; };
+		082F52712CD3FAFC00CE76BF /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 082F52702CD3FAFC00CE76BF /* Dependencies */; };
+		082F52732CD3FAFC00CE76BF /* DependenciesMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 082F52722CD3FAFC00CE76BF /* DependenciesMacros */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		0892CF012CD28E23000CBE06 /* TMDBTestTask.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TMDBTestTask.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		0892CF132CD28E25000CBE06 /* Exceptions for "TMDBTestTask" folder in "TMDBTestTask" target */ = {
+		082F52102CD384D300CE76BF /* Exceptions for "TMDBTestTask" folder in "TMDBTestTask" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -21,10 +29,10 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		0892CF032CD28E23000CBE06 /* TMDBTestTask */ = {
+		082F51FC2CD384D300CE76BF /* TMDBTestTask */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				0892CF132CD28E25000CBE06 /* Exceptions for "TMDBTestTask" folder in "TMDBTestTask" target */,
+				082F52102CD384D300CE76BF /* Exceptions for "TMDBTestTask" folder in "TMDBTestTask" target */,
 			);
 			path = TMDBTestTask;
 			sourceTree = "<group>";
@@ -36,6 +44,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				082F51A12CD2CCCC00CE76BF /* SnapKit in Frameworks */,
+				082F519C2CD2C84600CE76BF /* SDWebImage in Frameworks */,
+				082F52732CD3FAFC00CE76BF /* DependenciesMacros in Frameworks */,
+				082F519E2CD2C84600CE76BF /* SDWebImageMapKit in Frameworks */,
+				082F52712CD3FAFC00CE76BF /* Dependencies in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -45,7 +58,7 @@
 		0892CEF82CD28E23000CBE06 = {
 			isa = PBXGroup;
 			children = (
-				0892CF032CD28E23000CBE06 /* TMDBTestTask */,
+				082F51FC2CD384D300CE76BF /* TMDBTestTask */,
 				0892CF022CD28E23000CBE06 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -74,10 +87,15 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				0892CF032CD28E23000CBE06 /* TMDBTestTask */,
+				082F51FC2CD384D300CE76BF /* TMDBTestTask */,
 			);
 			name = TMDBTestTask;
 			packageProductDependencies = (
+				082F519B2CD2C84600CE76BF /* SDWebImage */,
+				082F519D2CD2C84600CE76BF /* SDWebImageMapKit */,
+				082F51A02CD2CCCC00CE76BF /* SnapKit */,
+				082F52702CD3FAFC00CE76BF /* Dependencies */,
+				082F52722CD3FAFC00CE76BF /* DependenciesMacros */,
 			);
 			productName = TMDBTestTask;
 			productReference = 0892CF012CD28E23000CBE06 /* TMDBTestTask.app */;
@@ -108,6 +126,11 @@
 			);
 			mainGroup = 0892CEF82CD28E23000CBE06;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				082F519A2CD2C84600CE76BF /* XCRemoteSwiftPackageReference "SDWebImage" */,
+				082F519F2CD2CCCC00CE76BF /* XCRemoteSwiftPackageReference "SnapKit" */,
+				082F526F2CD3FAFC00CE76BF /* XCRemoteSwiftPackageReference "swift-dependencies" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0892CF022CD28E23000CBE06 /* Products */;
 			projectDirPath = "";
@@ -338,6 +361,61 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		082F519A2CD2C84600CE76BF /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImage";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.19.7;
+			};
+		};
+		082F519F2CD2CCCC00CE76BF /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+		082F526F2CD3FAFC00CE76BF /* XCRemoteSwiftPackageReference "swift-dependencies" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-dependencies.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.4.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		082F519B2CD2C84600CE76BF /* SDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 082F519A2CD2C84600CE76BF /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImage;
+		};
+		082F519D2CD2C84600CE76BF /* SDWebImageMapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 082F519A2CD2C84600CE76BF /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImageMapKit;
+		};
+		082F51A02CD2CCCC00CE76BF /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 082F519F2CD2CCCC00CE76BF /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		082F52702CD3FAFC00CE76BF /* Dependencies */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 082F526F2CD3FAFC00CE76BF /* XCRemoteSwiftPackageReference "swift-dependencies" */;
+			productName = Dependencies;
+		};
+		082F52722CD3FAFC00CE76BF /* DependenciesMacros */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 082F526F2CD3FAFC00CE76BF /* XCRemoteSwiftPackageReference "swift-dependencies" */;
+			productName = DependenciesMacros;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0892CEF92CD28E23000CBE06 /* Project object */;
 }
