@@ -25,7 +25,6 @@ final class MainTableViewCell: UITableViewCell {
     // MARK: - Lifecycle -
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
         setupUI()
     }
     
@@ -43,10 +42,11 @@ final class MainTableViewCell: UITableViewCell {
             make.verticalEdges.equalToSuperview().inset(8)
             make.horizontalEdges.equalToSuperview().inset(16)
         }
+        shadowView.addSubview(containerView)
         containerView.addSubview(posterView)
         posterView.snp.makeConstraints { make in
-            make.width.equalTo(posterView.snp.height).multipliedBy(3.0/4.0)
             make.edges.equalToSuperview()
+            make.width.equalTo(posterView.snp.height).multipliedBy(3.0/4.0)
         }
         
         posterView.addSubview(titleLabel)
@@ -68,7 +68,7 @@ final class MainTableViewCell: UITableViewCell {
             make.trailing.equalToSuperview().inset(16)
         }
         
-        shadowView.addSubview(containerView)
+
         containerView.clipsToBounds = true
         containerView.layer.cornerRadius = 16
         
@@ -96,13 +96,11 @@ final class MainTableViewCell: UITableViewCell {
         titleLabel.text = item.title
 
         ratingLabel.text = "\(item.voteAverage ?? 0.0)"
-        let url = URL(string: ("https://image.tmdb.org/t/p/w1280" + (item.posterPath ?? "")))
+        let url = URL(string: ("https://image.tmdb.org/t/p/w500" + (item.posterPath ?? "")))
         posterView.sd_setImage(with: url)
     }
     
     func setGenres(titles: String) {
         genreLabel.text = titles
     }
-    
-    
 }

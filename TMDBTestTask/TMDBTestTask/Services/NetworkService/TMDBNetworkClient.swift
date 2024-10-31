@@ -12,7 +12,7 @@ struct TMDBNetworkClient: HTTPClient {
         return $0
     }(JSONDecoder())
     
-    func getMoviews(page: Int = 1) async throws -> MovieResponse {
+    func getMovies(page: Int = 1) async throws -> MovieResponse {
         do {
             return try await sendRequest(endpoint: TMDBEndpoint.movies(page: page),
                                          useCache: true,
@@ -25,6 +25,16 @@ struct TMDBNetworkClient: HTTPClient {
     func getGenres() async throws -> GenresResponse {
         do {
             return try await sendRequest(endpoint: TMDBEndpoint.genres,
+                                         useCache: true,
+                                         decoder: decoder)
+        } catch {
+            throw error
+        }
+    }
+    
+    func searchMovies(query: String) async throws -> MovieResponse {
+        do {
+            return try await sendRequest(endpoint: TMDBEndpoint.search(query: query),
                                          useCache: true,
                                          decoder: decoder)
         } catch {

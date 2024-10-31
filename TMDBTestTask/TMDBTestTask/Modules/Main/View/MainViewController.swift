@@ -7,12 +7,11 @@
 
 import UIKit
 import Combine
-import UIScrollView_InfiniteScroll
 
 class MainViewController: UIViewController {
     
     private var cancellables = Set<AnyCancellable>()
-    let viewModel = MainViewModel()
+    var viewModel: MainViewModelProtocol = MainViewModel()
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
@@ -25,6 +24,11 @@ class MainViewController: UIViewController {
         return tableView
     }()
     private let refreshControl = UIRefreshControl()
+    private let dataPlaceholderView: EmptyDataPlaceholderView = {
+        let view = EmptyDataPlaceholderView()
+        view.isHidden = true
+        return view
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,8 +36,6 @@ class MainViewController: UIViewController {
         setupSubscriptions()
         setupUI()
     }
-    
-    
 }
 
 
@@ -42,9 +44,13 @@ private extension MainViewController {
         setupNavigationBar()
         view.backgroundColor = .white
         view.addSubview(tableView)
-        
+        view.addSubview(dataPlaceholderView)
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+        
+        dataPlaceholderView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
         }
         
         refreshControl.tintColor = .black
@@ -66,7 +72,7 @@ private extension MainViewController {
         let search = UISearchController(searchResultsController: nil)
         search.delegate = self
         search.searchBar.delegate = self
-        
+        search.searchResultsUpdater = self
         navigationItem.searchController = search
         navigationItem.hidesSearchBarWhenScrolling = false
     }
@@ -116,12 +122,12 @@ private extension MainViewController {
     func renderState(_ state: MainModel.ViewState) {
         switch state {
         case .loaded:
+            dataPlaceholderView.isHidden = true
             tableView.reloadData()
             refreshControl.endRefreshing()
         case .empty:
-            break // show empty state
-        case .loading:
-            break
+            dataPlaceholderView.isHidden = false
+            tableView.reloadData()
         }
         
     }
@@ -139,7 +145,16 @@ extension MainViewController: UISearchControllerDelegate {
 }
 
 extension MainViewController: UISearchBarDelegate {
-    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        viewModel.searchQuery = ""
+        navigationItem.searchController?.searchBar.text = ""
+    }
+}
+
+extension MainViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        viewModel.searchQuery = searchController.searchBar.text ?? ""
+    }
 }
 
 extension MainViewController: UITableViewDataSource {
@@ -155,8 +170,6 @@ extension MainViewController: UITableViewDataSource {
         cell.setGenres(titles: genres)
         return cell
     }
-    
-    
 }
 
 extension MainViewController: UITableViewDelegate {
