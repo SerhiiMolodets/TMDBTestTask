@@ -18,7 +18,7 @@ struct MovieResponse: Codable, Equatable {
 struct MovieResult: Codable, Equatable {
     let adult: Bool?
     let backdropPath: String?
-    let genreIDS: [Int]?
+    let genreIds: [Int]?
     let id: Int?
     let originalLanguage, originalTitle, overview: String?
     let popularity: Double?
@@ -26,4 +26,19 @@ struct MovieResult: Codable, Equatable {
     let video: Bool?
     let voteAverage: Double?
     let voteCount: Int?
+}
+
+// MARK: - GenresResponse
+struct GenresResponse: Codable {
+    let genres: [Genre]
+}
+
+// MARK: - Genre
+struct Genre: Codable {
+    let id: Int
+    let name: String
+    
+    func check(id: Int) -> String? {
+        id == self.id ? name : nil
+    }
 }

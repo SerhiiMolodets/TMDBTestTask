@@ -10,7 +10,7 @@ struct MainModel {
     enum ViewState: Equatable {
         case empty
         case loading
-        case loaded([MovieResult], Bool)
+        case loaded
     }
     
     enum ViewAction {

@@ -7,25 +7,25 @@
 
 import UIKit
 import Combine
+import UIScrollView_InfiniteScroll
 
 class MainViewController: UIViewController {
     
     private var cancellables = Set<AnyCancellable>()
     let viewModel = MainViewModel()
-        
+    
     private lazy var tableView: UITableView = {
-            let tableView = UITableView(frame: .zero, style: .plain)
-            tableView.showsVerticalScrollIndicator = false
-            tableView.backgroundColor = .clear
-            tableView.separatorStyle = .none
-            tableView.dataSource = self
-            tableView.delegate = self
-//            tableView.register(VisitedCountriesDetailTableViewCell.self, forCellReuseIdentifier: VisitedCountriesDetailTableViewCell.className)
-//            tableView.register(TravelsTableViewSectionHeader.self, forHeaderFooterViewReuseIdentifier: TravelsTableViewSectionHeader.className)
-    //        tableView.register(VisitedCountriesDetailTableViewSectionHeader.self, forHeaderFooterViewReuseIdentifier: VisitedCountriesDetailTableViewSectionHeader.className)
-            return tableView
-        }()
-
+        let tableView = UITableView(frame: .zero, style: .plain)
+        tableView.showsVerticalScrollIndicator = false
+        tableView.backgroundColor = .clear
+        tableView.separatorStyle = .none
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.register(MainTableViewCell.self, forCellReuseIdentifier: String(describing: MainTableViewCell.self))
+        return tableView
+    }()
+    private let refreshControl = UIRefreshControl()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         viewModel.onViewDidLoad()
@@ -33,7 +33,7 @@ class MainViewController: UIViewController {
         setupUI()
     }
     
-
+    
 }
 
 
@@ -41,6 +41,24 @@ private extension MainViewController {
     func setupUI() {
         setupNavigationBar()
         view.backgroundColor = .white
+        view.addSubview(tableView)
+        
+        tableView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        refreshControl.tintColor = .black
+        refreshControl.addTarget(viewModel, action: #selector(MainViewModel.refresh), for: .valueChanged)
+        tableView.refreshControl = refreshControl
+        
+//        tableView.addInfiniteScroll { [weak self] _ in
+//            self?.viewModel.fetch(reload: false, nextPage: true)
+//        }
+//        
+//        tableView.setShouldShowInfiniteScrollHandler { [weak self] _ in
+//            return self?.viewModel.canPaginate() == true
+//        }
+        
     }
     
     func setupNavigationBar() {
@@ -59,9 +77,10 @@ private extension MainViewController {
         search.searchBar.delegate = self
         
         navigationItem.searchController = search
+        navigationItem.hidesSearchBarWhenScrolling = false
     }
     
- @objc private func sortedAction() {
+    @objc private func sortedAction() {
         
     }
 }
@@ -76,38 +95,39 @@ private extension MainViewController {
                 self?.renderState(state)
             }
             .store(in: &cancellables)
-
+        
         viewModel.viewAction
             .receive(on: DispatchQueue.main)
             .sink { [weak self] action in
                 self?.handleAction(action)
             }
             .store(in: &cancellables)
-    
+        
     }
     
     func renderState(_ state: MainModel.ViewState) {
         switch state {
-        case let .loaded(items, animated):
-            print(items)
-        // reload
+        case .loaded:
+            tableView.reloadData()
+            refreshControl.endRefreshing()
+            // reload
         case .empty:
             break // show empty state
         case .loading:
             break // show loading state
         }
-
+        
     }
     
     func handleAction(_ action: MainModel.ViewAction) {
-//        switch action {
-//        case .showNotImplementedAlert:
-//            showToast(message: "Not Implemented", .error)
-//        case let .showError(error):
-//            handleStatusMessage(error)
-//        case .showAddButton(let isHidden):
-//            addButton.isHidden = isHidden
-//        }
+        //        switch action {
+        //        case .showNotImplementedAlert:
+        //            showToast(message: "Not Implemented", .error)
+        //        case let .showError(error):
+        //            handleStatusMessage(error)
+        //        case .showAddButton(let isHidden):
+        //            addButton.isHidden = isHidden
+        //        }
     }
 }
 
@@ -121,16 +141,30 @@ extension MainViewController: UISearchBarDelegate {
 
 extension MainViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        0
+        viewModel.items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        UITableViewCell()
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: MainTableViewCell.self), for: indexPath) as? MainTableViewCell else { return UITableViewCell() }
+        let item = viewModel.items[indexPath.row]
+        cell.set(item: item)
+        let genres = viewModel.getGenresTitles(by: item.genreIds ?? [])
+        cell.setGenres(titles: genres)
+        return cell
     }
     
     
 }
 
 extension MainViewController: UITableViewDelegate {
-    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let contentHeight = scrollView.contentSize.height
+          let scrollViewHeight = scrollView.frame.size.height
+          let offset = scrollView.contentOffset.y
+          let threshold: CGFloat = 100
+
+          if offset > contentHeight - scrollViewHeight - threshold {
+              self.viewModel.fetch(reload: false, nextPage: true)
+          }
+    }
 }

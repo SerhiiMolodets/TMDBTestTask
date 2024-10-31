@@ -21,4 +21,14 @@ struct TMDBNetworkClient: HTTPClient {
             throw error
         }
     }
+    
+    func getGenres() async throws -> GenresResponse {
+        do {
+            return try await sendRequest(endpoint: TMDBEndpoint.genres,
+                                         useCache: true,
+                                         decoder: decoder)
+        } catch {
+            throw error
+        }
+    }
 }
