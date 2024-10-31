@@ -18,12 +18,13 @@ final class MainCoordinator: Coordinator {
     }
     
     func start() {
-        openMainViewController()
+        openMain()
     }
     
-    func openMainViewController() {
-//        let viewModel // build vm
-        let viewController = MainViewController()
+    func openMain() {
+        let viewModel = MainViewModel()
+        viewModel.coordinator = self
+        let viewController = MainViewController(viewModel: viewModel)
         self.navigationController.pushViewController(viewController, animated: true)
     }
 }

@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import Dependencies
 
 protocol MainViewModelProtocol {
     var selectedSortOption: SortOption { get set }
@@ -21,6 +22,11 @@ protocol MainViewModelProtocol {
 }
 
 final class MainViewModel: MainViewModelProtocol {
+    
+    // MARK: - Dependencies -
+    @Dependency(\.apiClient) var apiClient
+    
+    // MARK: - Properties -
     private let viewStateSubj = CurrentValueSubject<MainModel.ViewState, Never>(.empty)
     private let viewActionSubj = PassthroughSubject<MainModel.ViewAction, Never>()
     private var isLoading = false
@@ -35,8 +41,7 @@ final class MainViewModel: MainViewModelProtocol {
     }
     @Published var searchQuery: String = ""
     private var cancellables = Set<AnyCancellable>()
-    
-    private var netwrok = TMDBNetworkClient()
+    weak var coordinator: MainCoordinator?
 }
 
 extension MainViewModel {
@@ -66,7 +71,7 @@ extension MainViewModel {
         Task {
             do {
                 isLoading = true
-                let moviesResponse = try await netwrok.getMovies(page: currentPage)
+                let moviesResponse = try await apiClient.getMovies(page: currentPage)
                 currentPage = moviesResponse.page ?? 0
                 totalPages = moviesResponse.totalPages ?? 0
                 
@@ -135,7 +140,7 @@ private extension MainViewModel {
     private func getGenres() {
         Task {
             do {
-                genres = try await netwrok.getGenres().genres
+                genres = try await apiClient.getGenres().genres
             } catch {
                 viewActionSubj.send(.showError(error))
             }
@@ -167,7 +172,7 @@ private extension MainViewModel {
         Task {
             do {
                 isLoading = true
-                let moviesResponse = try await netwrok.searchMovies(query: query)
+                let moviesResponse = try await apiClient.searchMovies(query: query)
                 currentPage = moviesResponse.page ?? 0
                 totalPages = moviesResponse.totalPages ?? 0
                 
@@ -178,5 +183,4 @@ private extension MainViewModel {
             isLoading = false
         }
     }
-    
 }

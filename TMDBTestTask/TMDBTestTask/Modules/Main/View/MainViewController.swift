@@ -11,7 +11,7 @@ import Combine
 class MainViewController: UIViewController {
     
     private var cancellables = Set<AnyCancellable>()
-    var viewModel: MainViewModelProtocol = MainViewModel()
+    var viewModel: MainViewModelProtocol
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
@@ -35,6 +35,15 @@ class MainViewController: UIViewController {
         viewModel.onViewDidLoad()
         setupSubscriptions()
         setupUI()
+    }
+    
+    init(viewModel: MainViewModelProtocol) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
