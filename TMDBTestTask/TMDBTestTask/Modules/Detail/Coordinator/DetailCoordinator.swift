@@ -30,4 +30,10 @@ final class DetailCoordinator: Coordinator {
         let viewController = DetailViewController(viewModel: viewModel)
         self.navigationController.pushViewController(viewController, animated: true)
     }
+    
+    func openImageDetail(image: UIImage) {
+        let viewController = ImageDetailViewController(image: image)
+        viewController.modalPresentationStyle = .fullScreen
+        navigationController.present(viewController, animated: true)
+    }
 }

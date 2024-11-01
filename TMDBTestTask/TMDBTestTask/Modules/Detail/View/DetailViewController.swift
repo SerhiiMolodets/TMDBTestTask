@@ -34,11 +34,12 @@ class DetailViewController: UIViewController {
     private let posterView: UIImageView = {
         let view = UIImageView()
         view.contentMode = .center
-        view.snp.makeConstraints { make in
-            make.height.equalTo(550)
-        }
+        view.isUserInteractionEnabled = true
         return view
     }()
+    
+    private let posterButton = UIButton()
+    
     private let overviewContainer = UIView()
     
     private let overviewLabel: UILabel = {
@@ -78,6 +79,14 @@ private extension DetailViewController {
         view.backgroundColor = .white
         posterView.sd_imageIndicator = SDWebImageActivityIndicator.large
         posterView.clipsToBounds = true
+        posterView.snp.makeConstraints { make in
+            make.height.equalTo(550)
+        }
+        posterView.addSubview(posterButton)
+        posterButton.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        posterButton.addTarget(self, action: #selector (posterButtonTapped), for: .touchUpInside)
     }
     
     func setupScrollView() {
@@ -98,9 +107,6 @@ private extension DetailViewController {
     private func configureContainerView() {
         scrollStackViewContainer.addArrangedSubview(posterView)
         scrollStackViewContainer.addArrangedSubview(infoView)
-//        infoView.snp.makeConstraints { make in
-//            make.height.equalTo(150)
-//        }
         scrollStackViewContainer.addArrangedSubview(overviewContainer)
         overviewContainer.addSubview(overviewLabel)
         overviewLabel.snp.makeConstraints { make in
@@ -123,12 +129,18 @@ private extension DetailViewController {
                            subtitle: country + ", " + year,
                            genre: genres ?? "",
                            rating: formattedRating,
-                           isYoutubeButtonHidden: video == nil) {
-            // open yt player
+                           isYoutubeButtonHidden: video == nil) { [weak self] in
+         
         }
         overviewLabel.text = detail.overview
     }
     
+    // MARK: - Actions -
+    @objc private func posterButtonTapped() {
+        print("tap")
+        guard let image = posterView.image else { return }
+        viewModel.openImageDetail(for: image)
+    }
 }
 
 // MARK: - Subscriptions

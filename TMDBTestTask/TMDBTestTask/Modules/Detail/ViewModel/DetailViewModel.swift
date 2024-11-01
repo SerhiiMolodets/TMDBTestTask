@@ -7,12 +7,14 @@
 import Foundation
 import Combine
 import Dependencies
+import UIKit
 
 protocol DetailViewModelProtocol {
     var viewState: AnyPublisher<DetailModel.ViewState, Never> { get }
     var viewAction: AnyPublisher<DetailModel.ViewAction, Never> { get }
     
     func onViewDidLoad()
+    func openImageDetail(for image: UIImage)
 }
 
 final class DetailViewModel: DetailViewModelProtocol {
@@ -73,5 +75,11 @@ private extension DetailViewModel {
             }
             await LoaderView.sharedInstance.stop()
         }
+    }
+}
+
+extension DetailViewModel {
+    func openImageDetail(for image: UIImage) {
+        coordinator?.openImageDetail(image: image)
     }
 }
