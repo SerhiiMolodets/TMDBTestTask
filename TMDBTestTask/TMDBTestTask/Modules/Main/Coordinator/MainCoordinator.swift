@@ -27,4 +27,11 @@ final class MainCoordinator: Coordinator {
         let viewController = MainViewController(viewModel: viewModel)
         self.navigationController.pushViewController(viewController, animated: true)
     }
+    
+    func openDetails(id: Int) {
+        let coordinator = DetailCoordinator(navigationController: navigationController, id: id)
+        coordinator.parentCoordinator = self
+        childrenCoordinator.append(coordinator)
+        coordinator.start()
+    }
 }

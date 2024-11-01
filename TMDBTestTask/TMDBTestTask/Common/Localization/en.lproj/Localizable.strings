@@ -17,3 +17,4 @@
 "main_sort_option_message" = "Choose sorting method";
 
 "data_placeholder" = "No movies";
+"detail_raing" = "Rating: ";

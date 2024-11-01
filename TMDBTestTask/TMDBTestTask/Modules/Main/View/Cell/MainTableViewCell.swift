@@ -13,9 +13,7 @@ final class MainTableViewCell: UITableViewCell {
     
     // MARK: - Views -
     private let containerView = UIView()
-    
     private let posterView = UIImageView()
-    
     private let titleLabel = UILabel()
     private let genreLabel = UILabel()
     private let ratingLabel = UILabel()
@@ -32,12 +30,12 @@ final class MainTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Setup UI -
+    // MARK: - Setup Methods -
     private func setupUI() {
-        
         selectionStyle = .none
         backgroundColor = .clear
         contentView.addSubview(shadowView)
+        posterView.sd_imageIndicator = SDWebImageActivityIndicator.medium
         shadowView.snp.makeConstraints { make in
             make.verticalEdges.equalToSuperview().inset(8)
             make.horizontalEdges.equalToSuperview().inset(16)
@@ -46,7 +44,7 @@ final class MainTableViewCell: UITableViewCell {
         containerView.addSubview(posterView)
         posterView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-            make.width.equalTo(posterView.snp.height).multipliedBy(3.0/4.0)
+            make.height.equalTo(500)
         }
         
         posterView.addSubview(titleLabel)

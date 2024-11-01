@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import Dependencies
 
+// MARK: - MainViewModelProtocol -
 protocol MainViewModelProtocol {
     var selectedSortOption: SortOption { get set }
     var viewState: AnyPublisher<MainModel.ViewState, Never> { get }
@@ -19,9 +20,11 @@ protocol MainViewModelProtocol {
     func onViewDidLoad()
     func getGenresTitles(by ids: [Int]) -> String
     func fetch(reload: Bool, nextPage: Bool)
+    func didSelectItem(at indexPath: IndexPath)
 }
 
-final class MainViewModel: MainViewModelProtocol {
+// MARK: - MainViewModel -
+final class MainViewModel: @preconcurrency MainViewModelProtocol {
     
     // MARK: - Dependencies -
     @Dependency(\.apiClient) var apiClient
@@ -104,6 +107,11 @@ extension MainViewModel {
         }
         return titles
     }
+    
+    func didSelectItem(at indexPath: IndexPath) {
+        let item = items[indexPath.row]
+        coordinator?.openDetails(id: item.id ?? 0)
+    }
 }
 
 
@@ -127,7 +135,7 @@ private extension MainViewModel {
     @MainActor
     private func setupSearchBinding() {
         $searchQuery
-            .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
+            .debounce(for: .milliseconds(600), scheduler: DispatchQueue.main)
             .removeDuplicates()
             .sink { [weak self] query in
                 guard !query.isEmpty else { return }
@@ -136,7 +144,6 @@ private extension MainViewModel {
             .store(in: &cancellables)
     }
     
-    @MainActor
     private func getGenres() {
         Task {
             do {
