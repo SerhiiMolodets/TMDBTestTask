@@ -9,15 +9,15 @@ import Foundation
 
 // MARK: - MovieDetail
 struct MovieDetail: Codable {
-    let genres: [Genre]
+    let genres: [Genre]?
     let id: Int
-    let originCountry: [String]
-    let posterPath: String
-    let releaseDate: String
+    let originCountry: [String]?
+    let posterPath: String?
+    let releaseDate: String?
     let title: String
-    let video: Bool
-    let voteAverage: Double
-    let overview: String
+    let video: Bool?
+    let voteAverage: Double?
+    let overview: String?
 }
 
 // MARK: - VideoRespose
@@ -28,11 +28,11 @@ struct VideoRespose: Codable {
 
 // MARK: - Result
 struct VideoResult: Codable {
-let name, key: String
-    let publishedAt, site: String
-    let size: Int
-    let type: String
-    let id: String
+let name, key: String?
+    let publishedAt, site: String?
+    let size: Int?
+    let type: String?
+    let id: String?
 }
 
 enum VideoSite: String {

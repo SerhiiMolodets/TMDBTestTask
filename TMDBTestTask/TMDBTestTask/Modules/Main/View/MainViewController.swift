@@ -69,6 +69,7 @@ private extension MainViewController {
     
     func setupNavigationBar() {
         navigationItem.title = "main_navbar_title".localized()
+        navigationItem.backButtonDisplayMode = .minimal
         let button = UIButton(type: .custom)
         button.setImage(UIImage(systemName: "arrow.up.and.down.text.horizontal")?.withTintColor(.gray), for: .normal)
         button.frame = CGRectMake(0, 0, 44, 44)

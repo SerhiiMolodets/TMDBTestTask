@@ -38,6 +38,7 @@ final class MainTableViewCell: UITableViewCell {
         selectionStyle = .none
         backgroundColor = .clear
         contentView.addSubview(shadowView)
+        posterView.sd_imageIndicator = SDWebImageActivityIndicator.medium
         shadowView.snp.makeConstraints { make in
             make.verticalEdges.equalToSuperview().inset(8)
             make.horizontalEdges.equalToSuperview().inset(16)
@@ -46,7 +47,7 @@ final class MainTableViewCell: UITableViewCell {
         containerView.addSubview(posterView)
         posterView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-            make.width.equalTo(posterView.snp.height).multipliedBy(3.0/4.0)
+            make.height.equalTo(500)
         }
         
         posterView.addSubview(titleLabel)

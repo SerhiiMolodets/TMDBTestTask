@@ -57,6 +57,7 @@ extension MainViewModel {
         setupSearchBinding() 
     }
     
+    @MainActor
     func fetch(reload: Bool, nextPage: Bool) {
         guard !isLoading else { return }
         if canPaginate()  {
@@ -87,6 +88,7 @@ extension MainViewModel {
         return self.currentPage < self.totalPages
     }
     
+    @MainActor
     @objc func refresh() {
         fetch(reload: true, nextPage: false)
         searchQuery = ""
@@ -131,7 +133,7 @@ private extension MainViewModel {
     @MainActor
     private func setupSearchBinding() {
         $searchQuery
-            .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
+            .debounce(for: .milliseconds(600), scheduler: DispatchQueue.main)
             .removeDuplicates()
             .sink { [weak self] query in
                 guard !query.isEmpty else { return }
@@ -160,6 +162,7 @@ private extension MainViewModel {
         LoaderView.sharedInstance.stop()
     }
     
+    @MainActor
     func search(query: String, reload: Bool, nextPage: Bool) {
         guard !isLoading else { return }
         if canPaginate()  {
