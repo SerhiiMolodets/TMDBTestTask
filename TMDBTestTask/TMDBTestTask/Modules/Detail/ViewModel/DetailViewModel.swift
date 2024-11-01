@@ -15,6 +15,7 @@ protocol DetailViewModelProtocol {
     
     func onViewDidLoad()
     func openImageDetail(for image: UIImage)
+    func openTrailer(key: String)
 }
 
 final class DetailViewModel: DetailViewModelProtocol {
@@ -81,5 +82,9 @@ private extension DetailViewModel {
 extension DetailViewModel {
     func openImageDetail(for image: UIImage) {
         coordinator?.openImageDetail(image: image)
+    }
+    
+    func openTrailer(key: String) {
+        coordinator?.openTrailer(with: key)
     }
 }

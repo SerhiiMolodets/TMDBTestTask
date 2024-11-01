@@ -11,24 +11,20 @@ import SDWebImage
 
 class DetailViewController: UIViewController {
     
-    // MARK: - Properties -
-    private var cancellables = Set<AnyCancellable>()
-    var viewModel: DetailViewModelProtocol
-    
     // MARK: - Views -
     private let scrollView: UIScrollView = {
-    let view = UIScrollView()
-    view.translatesAutoresizingMaskIntoConstraints = false
+        let view = UIScrollView()
+        view.translatesAutoresizingMaskIntoConstraints = false
         view.contentInset = .init(top: 0, left: 0, bottom: 24, right: 0)
-    return view
+        return view
     }()
     
     private let scrollStackViewContainer: UIStackView = {
-    let view = UIStackView()
-    view.axis = .vertical
-    view.spacing = 0
-    view.translatesAutoresizingMaskIntoConstraints = false
-    return view
+        let view = UIStackView()
+        view.axis = .vertical
+        view.spacing = 0
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
     }()
     
     private let posterView: UIImageView = {
@@ -52,6 +48,12 @@ class DetailViewController: UIViewController {
     }()
     
     private let infoView = MovieInfoView()
+    
+    // MARK: - Properties -
+    private var cancellables = Set<AnyCancellable>()
+    
+    // MARK: - Viewmodel -
+    private var viewModel: DetailViewModelProtocol
     
     // MARK: - Lifecycle -
     override func viewDidLoad() {
@@ -90,9 +92,9 @@ private extension DetailViewController {
     }
     
     func setupScrollView() {
-    let margins = view.layoutMarginsGuide
-    view.addSubview(scrollView)
-    scrollView.addSubview(scrollStackViewContainer)
+        let margins = view.layoutMarginsGuide
+        view.addSubview(scrollView)
+        scrollView.addSubview(scrollStackViewContainer)
         scrollView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
             make.verticalEdges.equalTo(margins)
@@ -101,7 +103,7 @@ private extension DetailViewController {
             make.edges.equalToSuperview()
             make.width.equalToSuperview()
         }
-    configureContainerView()
+        configureContainerView()
     }
     
     private func configureContainerView() {
@@ -130,7 +132,8 @@ private extension DetailViewController {
                            genre: genres ?? "",
                            rating: formattedRating,
                            isYoutubeButtonHidden: video == nil) { [weak self] in
-         
+            guard let key = video?.key else { return }
+            self?.viewModel.openTrailer(key: key)
         }
         overviewLabel.text = detail.overview
     }
@@ -173,10 +176,10 @@ private extension DetailViewController {
     }
     
     func handleAction(_ action: DetailModel.ViewAction) {
-                switch action {
-                case let .showError(error):
-                    showAlert(error.localizedDescription)
-                }
+        switch action {
+        case let .showError(error):
+            showAlert(error.localizedDescription)
+        }
     }
 }
 

@@ -36,4 +36,10 @@ final class DetailCoordinator: Coordinator {
         viewController.modalPresentationStyle = .fullScreen
         navigationController.present(viewController, animated: true)
     }
+    
+    func openTrailer(with key: String) {
+        let viewController = YouTubeVideoViewController(videoKey: key)
+        viewController.modalPresentationStyle = .fullScreen
+        navigationController.present(viewController, animated: true)
+    }
 }
