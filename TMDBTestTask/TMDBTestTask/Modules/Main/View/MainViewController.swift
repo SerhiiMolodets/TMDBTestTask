@@ -8,11 +8,9 @@
 import UIKit
 import Combine
 
-class MainViewController: UIViewController {
+final class MainViewController: UIViewController {
     
-    private var cancellables = Set<AnyCancellable>()
-    var viewModel: MainViewModelProtocol
-    
+    // MARK: - Views -
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.showsVerticalScrollIndicator = false
@@ -23,20 +21,21 @@ class MainViewController: UIViewController {
         tableView.register(MainTableViewCell.self, forCellReuseIdentifier: String(describing: MainTableViewCell.self))
         return tableView
     }()
+    
     private let refreshControl = UIRefreshControl()
+    
     private let dataPlaceholderView: EmptyDataPlaceholderView = {
         let view = EmptyDataPlaceholderView()
         view.isHidden = true
         return view
     }()
+    // MARK: - Viewmodel -
+    private var viewModel: MainViewModelProtocol
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        viewModel.onViewDidLoad()
-        setupSubscriptions()
-        setupUI()
-    }
+    // MARK: - Properties -
+    private var cancellables = Set<AnyCancellable>()
     
+    // MARK: - Lifecycle -
     init(viewModel: MainViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -45,10 +44,19 @@ class MainViewController: UIViewController {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        viewModel.onViewDidLoad()
+        setupSubscriptions()
+        setupUI()
+    }
 }
 
 
 private extension MainViewController {
+    
+    // MARK: - Setup Methods -
     func setupUI() {
         setupNavigationBar()
         view.backgroundColor = .white
@@ -88,6 +96,7 @@ private extension MainViewController {
         navigationItem.hidesSearchBarWhenScrolling = false
     }
     
+    // MARK: - Actions -
     @objc private func sortedAction() {
         let actionSheet = UIAlertController(title: "main_sort_option_title".localized(), message: "main_sort_option_message".localized(), preferredStyle: .actionSheet)
         
@@ -151,10 +160,11 @@ private extension MainViewController {
     }
 }
 
-extension MainViewController: UISearchControllerDelegate {
-    
-}
+// MARK: - UISearchControllerDelegate -
+extension MainViewController: UISearchControllerDelegate { }
 
+
+// MARK: - UISearchBarDelegate -
 extension MainViewController: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         viewModel.searchQuery = ""
@@ -162,12 +172,14 @@ extension MainViewController: UISearchBarDelegate {
     }
 }
 
+// MARK: - UISearchResultsUpdating -
 extension MainViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         viewModel.searchQuery = searchController.searchBar.text ?? ""
     }
 }
 
+// MARK: - UITableViewDataSource -
 extension MainViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         viewModel.items.count
@@ -183,6 +195,7 @@ extension MainViewController: UITableViewDataSource {
     }
 }
 
+// MARK: - UITableViewDelegate -
 extension MainViewController: UITableViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let contentHeight = scrollView.contentSize.height

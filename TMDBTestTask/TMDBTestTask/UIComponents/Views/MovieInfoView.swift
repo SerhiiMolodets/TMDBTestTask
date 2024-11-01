@@ -7,12 +7,9 @@
 
 import UIKit
 
-class MovieInfoView: UIView {
+final class MovieInfoView: UIView {
     
-    // MARK: - Properties -
-    var onYoutubeDidTap: (() -> Void)?
-    
-    // MARK: - Subviews -
+    // MARK: - Views -
     private let iconButton: UIButton = {
         let button = UIButton()
         button.setImage(.youtube, for: .normal)
@@ -53,8 +50,10 @@ class MovieInfoView: UIView {
         return label
     }()
     
+    // MARK: - Properties -
+    var onYoutubeDidTap: (() -> Void)?
     
-    // MARK: - Initializer -
+    // MARK: - Lifecycle -
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -66,8 +65,7 @@ class MovieInfoView: UIView {
         setupView()
     }
     
-    // MARK: - Setup -
-    
+    // MARK: - Setup Methods -
     private func setupView() {
         addSubview(iconButton)
         addSubview(titleLabel)
@@ -105,14 +103,12 @@ class MovieInfoView: UIView {
         }
     }
     
-    // MARK: - Configuration -
-    
     func configure(title: String,
                    subtitle: String,
                    genre: String,
                    rating: String,
                    isYoutubeButtonHidden: Bool,
-    onYoutubeDidTap: (() -> Void)?) {
+                   onYoutubeDidTap: (() -> Void)?) {
         titleLabel.text = title
         subtitleLabel.text = subtitle
         genreLabel.text = genre
@@ -121,6 +117,7 @@ class MovieInfoView: UIView {
         self.onYoutubeDidTap = onYoutubeDidTap
     }
     
+    // MARK: - Actions -
     @objc private func iconButtonTapped() {
         onYoutubeDidTap?()
     }

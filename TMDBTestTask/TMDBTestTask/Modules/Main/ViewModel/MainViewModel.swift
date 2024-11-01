@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import Dependencies
 
+// MARK: - MainViewModelProtocol -
 protocol MainViewModelProtocol {
     var selectedSortOption: SortOption { get set }
     var viewState: AnyPublisher<MainModel.ViewState, Never> { get }
@@ -22,6 +23,7 @@ protocol MainViewModelProtocol {
     func didSelectItem(at indexPath: IndexPath)
 }
 
+// MARK: - MainViewModel -
 final class MainViewModel: @preconcurrency MainViewModelProtocol {
     
     // MARK: - Dependencies -

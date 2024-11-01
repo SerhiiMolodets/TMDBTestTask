@@ -7,14 +7,16 @@
 
 import UIKit
 
-class ImageDetailViewController: UIViewController, UIScrollViewDelegate {
+final class ImageDetailViewController: UIViewController {
     
+    // MARK: - Views -
     private let imageView = UIImageView()
     private let scrollView = UIScrollView()
     
+    // MARK: - Properties -
     private let image: UIImage
     
-    
+    // MARK: - Lifecycle -
     init(image: UIImage) {
         self.image = image
         super.init(nibName: nil, bundle: nil)
@@ -37,6 +39,7 @@ class ImageDetailViewController: UIViewController, UIScrollViewDelegate {
             view.addGestureRecognizer(swipeGesture)
     }
     
+    // MARK: - Setup Methods -
     private func setupScrollView() {
         scrollView.delegate = self
         scrollView.minimumZoomScale = 1.0
@@ -51,12 +54,16 @@ class ImageDetailViewController: UIViewController, UIScrollViewDelegate {
         imageView.frame = scrollView.bounds
         scrollView.addSubview(imageView)
     }
-
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return imageView
-    }
     
+    // MARK: - Actions -
     @objc private func dismissViewController() {
         dismiss(animated: true, completion: nil)
+    }
+}
+
+// MARK: - UIScrollViewDelegate -
+extension ImageDetailViewController: UIScrollViewDelegate {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return imageView
     }
 }

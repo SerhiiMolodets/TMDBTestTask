@@ -7,8 +7,9 @@
 
 import UIKit
 
-class EmptyDataPlaceholderView: UIView {
+final class EmptyDataPlaceholderView: UIView {
     
+    // MARK: - Views -
     private let iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -26,6 +27,7 @@ class EmptyDataPlaceholderView: UIView {
         return label
     }()
     
+    // MARK: - Lifecycle -
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
@@ -36,7 +38,7 @@ class EmptyDataPlaceholderView: UIView {
         setupView()
     }
     
-    // MARK: - Setup
+    // MARK: - Setup Methods -
     private func setupView() {
         backgroundColor = .clear
         

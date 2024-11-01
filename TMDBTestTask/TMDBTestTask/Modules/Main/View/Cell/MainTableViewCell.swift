@@ -13,9 +13,7 @@ final class MainTableViewCell: UITableViewCell {
     
     // MARK: - Views -
     private let containerView = UIView()
-    
     private let posterView = UIImageView()
-    
     private let titleLabel = UILabel()
     private let genreLabel = UILabel()
     private let ratingLabel = UILabel()
@@ -32,9 +30,8 @@ final class MainTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Setup UI -
+    // MARK: - Setup Methods -
     private func setupUI() {
-        
         selectionStyle = .none
         backgroundColor = .clear
         contentView.addSubview(shadowView)

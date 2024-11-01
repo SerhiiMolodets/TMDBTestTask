@@ -8,11 +8,15 @@
 import UIKit
 import YouTubeiOSPlayerHelper
 
-class YouTubeVideoViewController: UIViewController {
+final class YouTubeVideoViewController: UIViewController {
     
+    // MARK: - Views -
     private let playerView = YTPlayerView()
+    
+    // MARK: - Properties -
     private let videoKey: String
     
+    // MARK: - Lifecycle -
     init(videoKey: String) {
         self.videoKey = videoKey
         super.init(nibName: nil, bundle: nil)
@@ -34,6 +38,7 @@ class YouTubeVideoViewController: UIViewController {
         view.addGestureRecognizer(swipeGesture)
     }
     
+    // MARK: - Setup Methods -
     private func setupPlayerView() {
         view.addSubview(playerView)
         playerView.snp.makeConstraints { make in
@@ -43,14 +48,15 @@ class YouTubeVideoViewController: UIViewController {
         }
     }
     
+    // MARK: - Flow -
     private func loadVideo() {
         LoaderView.sharedInstance.start()
         playerView.load(withVideoId: videoKey)
         LoaderView.sharedInstance.stop()
     }
     
+    // MARK: - Actions -
     @objc private func dismissViewController() {
         dismiss(animated: true, completion: nil)
     }
 }
-

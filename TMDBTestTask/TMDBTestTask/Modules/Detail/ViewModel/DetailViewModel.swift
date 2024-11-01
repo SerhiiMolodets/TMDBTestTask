@@ -9,6 +9,7 @@ import Combine
 import Dependencies
 import UIKit
 
+// MARK: - DetailViewModelProtocol -
 protocol DetailViewModelProtocol {
     var viewState: AnyPublisher<DetailModel.ViewState, Never> { get }
     var viewAction: AnyPublisher<DetailModel.ViewAction, Never> { get }
@@ -18,6 +19,7 @@ protocol DetailViewModelProtocol {
     func openTrailer(key: String)
 }
 
+// MARK: - DetailViewModel -
 final class DetailViewModel: DetailViewModelProtocol {
     
     // MARK: - Dependencies -

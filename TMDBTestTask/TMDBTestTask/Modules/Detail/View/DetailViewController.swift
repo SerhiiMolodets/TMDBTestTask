@@ -9,7 +9,7 @@ import UIKit
 import Combine
 import SDWebImage
 
-class DetailViewController: UIViewController {
+final class DetailViewController: UIViewController {
     
     // MARK: - Views -
     private let scrollView: UIScrollView = {
@@ -49,20 +49,13 @@ class DetailViewController: UIViewController {
     
     private let infoView = MovieInfoView()
     
-    // MARK: - Properties -
-    private var cancellables = Set<AnyCancellable>()
-    
     // MARK: - Viewmodel -
     private var viewModel: DetailViewModelProtocol
     
-    // MARK: - Lifecycle -
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupSubscriptions()
-        viewModel.onViewDidLoad()
-        setupUI()
-    }
+    // MARK: - Properties -
+    private var cancellables = Set<AnyCancellable>()
     
+    // MARK: - Lifecycle -
     init(viewModel: DetailViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -72,10 +65,18 @@ class DetailViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupSubscriptions()
+        viewModel.onViewDidLoad()
+        setupUI()
+    }
     
 }
-// MARK: - Subscriptions
+
 private extension DetailViewController {
+    
+    // MARK: - Setup Methods -
     func setupUI() {
         setupScrollView()
         view.backgroundColor = .white
@@ -146,7 +147,7 @@ private extension DetailViewController {
     }
 }
 
-// MARK: - Subscriptions
+// MARK: - Subscriptions -
 private extension DetailViewController {
     func setupSubscriptions() {
         viewModel.viewState
@@ -183,6 +184,7 @@ private extension DetailViewController {
     }
 }
 
+// MARK: - Flow -
 private extension DetailViewController {
     func getYear(from dateString: String) -> String {
         let dateFormatter = DateFormatter()

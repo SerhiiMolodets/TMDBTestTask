@@ -7,16 +7,16 @@
 import Foundation
 import UIKit
 
-class LoaderView: UIView {
+final class LoaderView: UIView {
     
+    // MARK: - Properties -
     static let sharedInstance = LoaderView()
     
     private let lineWidth: CGFloat = 6.0
     private let circleSize: CGSize = CGSize(width: 80.0, height: 80.0)
     private var circleLayer : CAShapeLayer?
     
-    //==============================================================================
-    
+    // MARK: - Lifecycle -
     override init(frame: CGRect) {
         let scene = UIApplication.shared.connectedScenes.first
         guard let sceneDelegate = scene?.delegate as? SceneDelegate,
@@ -32,8 +32,7 @@ class LoaderView: UIView {
         super.init(coder: aDecoder)
     }
     
-    //==============================================================================
-    
+    // MARK: - Setup Methods -
     private func setup() {
         let scene = UIApplication.shared.connectedScenes.first
         guard let sceneDelegate = scene?.delegate as? SceneDelegate,
@@ -49,8 +48,6 @@ class LoaderView: UIView {
         self.circleLayer?.frame = CGRect(origin: position, size: circleSize)
         self.layer.addSublayer(self.circleLayer!)
     }
-    
-    //==============================================================================
     
     private func drawBackgroundCircle(partial : Bool) {
         let startAngle : CGFloat = CGFloat.pi / CGFloat(2.0)
@@ -68,9 +65,8 @@ class LoaderView: UIView {
         processBackgroundPath.addArc(withCenter: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
         circleLayer?.path = processBackgroundPath.cgPath;
     }
-    
-    //==============================================================================
-    
+
+    // MARK: - Flow -
     func start(on view: UIView? = nil) {
         self.alpha = 0
         self.drawBackgroundCircle(partial: true)
@@ -92,8 +88,6 @@ class LoaderView: UIView {
         }
     }
     
-    //==============================================================================
-    
     func stop() {
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 0
@@ -102,8 +96,6 @@ class LoaderView: UIView {
             self.removeFromSuperview()
         }
     }
-    
-    //==============================================================================
     
     func stopImmediately() {
         self.alpha = 0
