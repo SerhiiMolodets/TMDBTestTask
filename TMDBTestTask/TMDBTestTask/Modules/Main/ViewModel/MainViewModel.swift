@@ -19,9 +19,10 @@ protocol MainViewModelProtocol {
     func onViewDidLoad()
     func getGenresTitles(by ids: [Int]) -> String
     func fetch(reload: Bool, nextPage: Bool)
+    func didSelectItem(at indexPath: IndexPath)
 }
 
-final class MainViewModel: MainViewModelProtocol {
+final class MainViewModel: @preconcurrency MainViewModelProtocol {
     
     // MARK: - Dependencies -
     @Dependency(\.apiClient) var apiClient
@@ -56,7 +57,6 @@ extension MainViewModel {
         setupSearchBinding() 
     }
     
-    @MainActor
     func fetch(reload: Bool, nextPage: Bool) {
         guard !isLoading else { return }
         if canPaginate()  {
@@ -87,7 +87,6 @@ extension MainViewModel {
         return self.currentPage < self.totalPages
     }
     
-    @MainActor
     @objc func refresh() {
         fetch(reload: true, nextPage: false)
         searchQuery = ""
@@ -103,6 +102,11 @@ extension MainViewModel {
             }
         }
         return titles
+    }
+    
+    func didSelectItem(at indexPath: IndexPath) {
+        let item = items[indexPath.row]
+        coordinator?.openDetails(id: item.id ?? 0)
     }
 }
 
@@ -136,7 +140,6 @@ private extension MainViewModel {
             .store(in: &cancellables)
     }
     
-    @MainActor
     private func getGenres() {
         Task {
             do {
@@ -157,7 +160,6 @@ private extension MainViewModel {
         LoaderView.sharedInstance.stop()
     }
     
-    @MainActor
     func search(query: String, reload: Bool, nextPage: Bool) {
         guard !isLoading else { return }
         if canPaginate()  {

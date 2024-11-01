@@ -193,4 +193,8 @@ extension MainViewController: UITableViewDelegate {
               self.viewModel.fetch(reload: false, nextPage: true)
           }
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        viewModel.didSelectItem(at: indexPath)
+    }
 }
