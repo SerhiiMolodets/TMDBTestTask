@@ -18,3 +18,4 @@
 
 "data_placeholder" = "No movies";
 "detail_raing" = "Rating: ";
+"connection_error_message" = "You are offline. Please, enable your Wi-Fi or connect using cellular data." ;

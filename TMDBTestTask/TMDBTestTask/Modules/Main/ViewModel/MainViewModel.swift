@@ -28,6 +28,7 @@ final class MainViewModel: @preconcurrency MainViewModelProtocol {
     
     // MARK: - Dependencies -
     @Dependency(\.apiClient) var apiClient
+    @Dependency(\.networkMonitor) var networkMonitor
     
     // MARK: - Properties -
     private let viewStateSubj = CurrentValueSubject<MainModel.ViewState, Never>(.empty)
@@ -40,7 +41,8 @@ final class MainViewModel: @preconcurrency MainViewModelProtocol {
     var genres: [Genre] = []
     var selectedSortOption: SortOption = .rating {
         didSet {
-            sortItems()  }
+                    sortItems()
+        }
     }
     @Published var searchQuery: String = ""
     private var cancellables = Set<AnyCancellable>()
@@ -56,7 +58,8 @@ extension MainViewModel {
         LoaderView.sharedInstance.start()
         fetch(reload: false, nextPage: false)
         getGenres()
-        setupSearchBinding() 
+        setupSearchBinding()
+        monitorNetworkStatus()
     }
     
     @MainActor
@@ -74,7 +77,7 @@ extension MainViewModel {
         Task {
             do {
                 isLoading = true
-                let moviesResponse = try await apiClient.getMovies(page: currentPage)
+                let moviesResponse = try await apiClient.getMovies(page: currentPage, sort: selectedSortOption.networkValue)
                 currentPage = moviesResponse.page ?? 0
                 totalPages = moviesResponse.totalPages ?? 0
                 
@@ -92,6 +95,7 @@ extension MainViewModel {
     
     @MainActor
     @objc func refresh() {
+        guard checkConnection() else { return }
         fetch(reload: true, nextPage: false)
         searchQuery = ""
     }
@@ -109,6 +113,7 @@ extension MainViewModel {
     }
     
     func didSelectItem(at indexPath: IndexPath) {
+        guard checkConnection() else { return }
         let item = items[indexPath.row]
         coordinator?.openDetails(id: item.id ?? 0)
     }
@@ -117,19 +122,12 @@ extension MainViewModel {
 
 private extension MainViewModel {
     func sortItems() {
-        switch selectedSortOption {
-        case .alphabetical:
-            items.sort { ($0.title ?? "") < ($1.title ?? "") }
-        case .date:
-            items.sort {
-                let date1 = $0.releaseDate ?? ""
-                let date2 = $1.releaseDate ?? ""
-                return date1 < date2
-            }
-        case .rating:
-            items.sort { ($0.popularity ?? 0) > ($1.popularity ?? 0) }
+        guard checkConnection() else { return }
+        Task { @MainActor in
+            LoaderView.sharedInstance.start()
+            fetch(reload: true, nextPage: false)
+            LoaderView.sharedInstance.stop()
         }
-        viewStateSubj.send(.loaded)
     }
 
     @MainActor
@@ -166,28 +164,52 @@ private extension MainViewModel {
     
     @MainActor
     func search(query: String, reload: Bool, nextPage: Bool) {
-        guard !isLoading else { return }
-        if canPaginate()  {
-            currentPage += 1
-        }
-        if currentPage <= 1 || reload {
-            self.currentPage = 1
-            self.totalPages = 0
-        }
-        if reload { isPaginated = false }
-        else if currentPage > 1 { isPaginated = true }
-        Task {
-            do {
-                isLoading = true
-                let moviesResponse = try await apiClient.searchMovies(query: query)
-                currentPage = moviesResponse.page ?? 0
-                totalPages = moviesResponse.totalPages ?? 0
-                
-                proceed(movies: moviesResponse.results ?? [], nextPage: nextPage)
-            } catch {
-                viewActionSubj.send(.showError(error))
+        if networkMonitor.isConnected {
+            guard !isLoading else { return }
+            if canPaginate()  {
+                currentPage += 1
             }
-            isLoading = false
+            if currentPage <= 1 || reload {
+                self.currentPage = 1
+                self.totalPages = 0
+            }
+            if reload { isPaginated = false }
+            else if currentPage > 1 { isPaginated = true }
+            Task {
+                do {
+                    isLoading = true
+                    let moviesResponse = try await apiClient.searchMovies(query: query)
+                    currentPage = moviesResponse.page ?? 0
+                    totalPages = moviesResponse.totalPages ?? 0
+                    
+                    proceed(movies: moviesResponse.results ?? [], nextPage: nextPage)
+                } catch {
+                    viewActionSubj.send(.showError(error))
+                }
+                isLoading = false
+            }
+        } else {
+            let filteredMovies = items.filter { $0.title?.lowercased().contains(query.lowercased()) ?? false }
+            proceed(movies: filteredMovies, nextPage: false)
+        }
+    }
+    
+    func monitorNetworkStatus() {
+        networkMonitor.$isConnected
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isConnected in
+                guard !isConnected else { return }
+                self?.viewActionSubj.send(.showMessage("connection_error_message".localized()))
+            }
+            .store(in: &cancellables)
+    }
+    
+    func checkConnection() -> Bool {
+        if networkMonitor.isConnected {
+            return true
+        } else {
+            viewActionSubj.send(.showMessage("connection_error_message".localized()))
+            return false
         }
     }
 }
