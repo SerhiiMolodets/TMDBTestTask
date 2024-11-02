@@ -6,16 +6,15 @@
 //
 import Foundation
 
-@MainActor
 struct TMDBNetworkClient: HTTPClient {
     private let decoder: JSONDecoder = {
         $0.keyDecodingStrategy = .convertFromSnakeCase
         return $0
     }(JSONDecoder())
     
-    func getMovies(page: Int = 1) async throws -> MovieResponse {
+    func getMovies(page: Int = 1, sort option: String) async throws -> MovieResponse {
         do {
-            return try await sendRequest(endpoint: TMDBEndpoint.movies(page: page),
+            return try await sendRequest(endpoint: TMDBEndpoint.movies(page: page, sortOption: option),
                                          useCache: true,
                                          decoder: decoder)
         } catch {

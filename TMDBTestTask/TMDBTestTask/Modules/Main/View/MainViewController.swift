@@ -156,6 +156,8 @@ private extension MainViewController {
                 switch action {
                 case let .showError(error):
                     showAlert(error.localizedDescription)
+                case let .showMessage(message):
+                    showAlert(message)
                 }
     }
 }

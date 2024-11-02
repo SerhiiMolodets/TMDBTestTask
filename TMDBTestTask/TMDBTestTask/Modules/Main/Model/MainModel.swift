@@ -14,5 +14,6 @@ struct MainModel {
     
     enum ViewAction {
         case showError(Error)
+        case showMessage(String)
     }
 }

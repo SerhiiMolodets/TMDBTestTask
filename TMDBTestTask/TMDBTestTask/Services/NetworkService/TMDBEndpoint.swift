@@ -9,7 +9,7 @@ import Foundation
 enum TMDBEndpoint: Endpoint {
     
     case search(query: String)
-    case movies(page: Int)
+    case movies(page: Int, sortOption: String)
     case genres
     case movieDetail(id: Int)
     case videos(id: Int)
@@ -41,8 +41,9 @@ enum TMDBEndpoint: Endpoint {
     }
     var queryItems: [URLQueryItem]? {
         switch self {
-        case let .movies(page: page):
-            return [URLQueryItem(name: "page", value: String(page))]
+        case let .movies(page: page, sortOption: sortOption):
+            return [URLQueryItem(name: "page", value: String(page)),
+                    URLQueryItem(name: "sort_by", value: String(sortOption))]
         case let .search(query: query):
             return [URLQueryItem(name: "query", value: query)]
         default: return nil
