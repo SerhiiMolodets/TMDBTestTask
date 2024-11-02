@@ -1,0 +1,21 @@
+/* 
+  Localizable.strings
+  TMDBTestTask
+
+  Created by Serhii Molodets on 31.10.2024.
+  
+*/
+
+"common_cancel" = "Cancel";
+"common_search" = "Search";
+
+"main_navbar_title" = "Popular Movies";
+"main_alphabetical_sort_option" = "Alphabetical";
+"main_date_sort_option" = "By Date";
+"main_rating_sort_option" = "By Rating";
+"main_sort_option_title" = "Sort Options";
+"main_sort_option_message" = "Choose sorting method";
+
+"data_placeholder" = "No movies";
+"detail_raing" = "Rating: ";
+"connection_error_message" = "You are offline. Please, enable your Wi-Fi or connect using cellular data." ;
